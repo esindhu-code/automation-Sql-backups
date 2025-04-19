@@ -1,0 +1,15 @@
+#cloud scheduler
+resource "google_cloud_scheduler_job" "dr-healthcheck-job" {
+    paused           = var.dr-cloud-scheduler-pause
+    name             = "dr-healthcheck"
+    description      = "test http job with updated fields"
+    schedule         = "*/5 * * * *"
+    region           = "us-east4"
+    time_zone        = "Etc/UTC"
+    attempt_deadline = "320s"
+     pubsub_target {
+        # topic.id is the topic's full resource name.
+        topic_name = module.healthcheck-pubsub-topic.id
+        data       = base64encode("{\"action\": \"run_cross_region_health_check\"}")
+  }
+}
