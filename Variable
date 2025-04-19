@@ -1,0 +1,79 @@
+variable "project_id"{
+    description = "The Id of the project in which the resources needs to be created"
+    type = string
+}
+
+variable "dr-cloud-scheduler-pause"{
+  description="if set to false cloud scheduler will resume"
+  default = true
+}
+
+variable "region"{
+  description="region , where resources should be created" 
+  type = string
+}
+
+variable "vpc_connector"{
+    description ="name of the vpc connector for the vpc network you want to use."
+    type = string
+}
+
+variable "health_check_cf_name"{
+    description ="name of the health check cloud function."
+    type = string
+    default= "dr-health-check-cf"
+}
+
+variable "failover_cf_name"{
+    description ="name of the failover cloud function."
+    type = string
+    default= "dr-failover-cf"
+}
+
+variable "storage_bucket_name"{
+    description ="name of the storage bucket to be created which is used to store dr-codes"
+    type = string
+}
+
+variable "health_check_service_account_name"{
+    description ="name of the service account which is used for health check flow"
+    type = string
+    default = "tlz-mrdr-sa"
+}
+
+variable "failover_service_account_name"{
+    description ="name of the service account which is used for failover flow"
+    type = string
+    default = "tlz-mrdr-failover-sa"
+}
+
+variable "health_check_pubsub_topic_name"{
+    description ="name of the healthcheck pubsub topic which receives message from cloud scheduler"
+    type = string
+    default = "dr-healthcheck-topic"
+}
+
+variable "failover_pubsub_topic_name"{
+    description ="name of the failover_pubsub_topic which receives message from health check function"
+    type = string
+    default = "dr-failover-topic"
+}
+
+variable "health_check_cf_runtime_env_values" {   
+  description = "should be a map of key-value pairs. load balancer health check url is mandatory"
+  type        = map(object({
+    project_id = optional(string)
+    load_balancer_health_check_url = string
+    pubsub_topic_id  = optional(string)
+  }))
+}
+
+variable "failover_cf_runtime_env_values" {   
+  description = "should be a map of key-value pairs. all four values are mandatory"
+  type        = map(object({
+    jenkins_url = string
+    jenkins_job_name = string
+    jenkins_user  = string
+    jenkins_token = string
+  }))
+}
